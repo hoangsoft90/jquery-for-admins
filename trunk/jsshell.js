@@ -32,6 +32,54 @@ jsshell.cls.functionName = "CLS";
 jsshell.cls.execute = function() {
 	WScript.StdOut.WriteBlankLines(100);
 };
+jsshell.echo = {};
+jsshell.echo.functionName = "ECHO";
+jsshell.echo.execute = function() {
+	jsshell.echo.ison = !jsshell.echo.ison;
+	WScript.Echo("jsshell echo is " + (jsshell.echo.ison ? "on" : "off"));
+}
+jsshell.help = {};
+jsshell.help.functionName = "HELP,?,/?,MAN";
+jsshell.help.execute = function() {
+	WScript.Echo();
+	WScript.Echo("Welcome to jsshell. jsshell should be used with jq4a.js in the same folder.");
+	WScript.Echo("jsshell native commands...");
+	WScript.Echo("	echo -- turn jsshell's echo on or off.");
+	WScript.Echo("	        jsshell will wrap your commands with WScript.Echo() when on.");
+	WScript.Echo("	cls  -- write 100 blank lines to clear the screen.");
+	WScript.Echo("	exit -- (also 'bye') terminates jsshell.");
+	WScript.Echo("	alias-- create custom commands (wrapped as functions) for this session.");
+	WScript.Echo();
+	WScript.Echo("jq4a core commands...");
+	WScript.Echo("	jq4a functions are in the same eval() scope as your commands.");
+	WScript.Echo("	All jq4a functions are added to the $ object.");
+	WScript.Echo("	Try this command to see properties and functions from the $ object:");
+	WScript.Echo("		$.each($, function(e) { WScript.Echo(e)});");
+	WScript.Echo("	To see the code for an actual command, type something like this:");
+	WScript.Echo("		WScript.Echo($.tee);");
+	WScript.Echo("	This command will output the script behind the 'tee' function.");
+	WScript.Echo();
+	WScript.Echo("Have you found the jq4a project useful? Would you like to learn more/contribute?");
+	WScript.Echo("	http://code.google.com/p/jquery-for-admins/");
+	WScript.Echo("	aikeru [at] gmail [dot] com");
+	WScript.Echo("	mikesharp.wordpress.com");
+}
+jsshell.alias = {};
+jsshell.alias.functionName = "ALIAS";
+jsshell.alias.aliasObject = {};
+jsshell.alias.execute = function() {
+	var atxt = "";
+	var aname = "";
+	WScript.Echo("Enter the alias expression:");
+	WScript.StdOut.Write("alias>");
+	atxt = WScript.StdIn.ReadLine();
+	if(atxt == "") { WScript.Echo("Ok. No new alias."); return; }
+	WScript.Echo("alias name?>");
+	aname = WScript.StdIn.ReadLine();
+	if(aname == "") { WScript.Echo("Ok. No new alias."); return; }
+	jsshell.alias.aliasObject = jsshell.alias.aliasObject || {};
+	jsshell.alias.aliasObject[aname] = "(function(){" + atxt + "})()";
+};
 
 var reflectObject = function(obj) {
 	var retStr = "";
@@ -74,8 +122,23 @@ do {
 			}
 		}
 		if(!fCmd) {
+			for(var x in jsshell.alias.aliasObject) {
+				if(x.toUpperCase() === cmd.toUpperCase()) {
+					try {
+					fCmd = true;
+					if(jsshell.echo.ison) { WScript.Echo(eval(jsshell.alias.aliasObject[x])); }
+					else { eval(jsshell.alias.aliasObject[x]); }
+					} catch(e) { WScript.Echo($.reflectObject(e)); }
+				}
+			}
+		}
+		if(!fCmd) {
 			try{
-				eval(cmd);
+				if(jsshell.echo.ison) {
+					WScript.Echo(eval(cmd));
+				} else {
+					eval(cmd);
+				}
 			}catch(e) {
 				WScript.Echo('Error: ' + reflectObject(e));
 			}
