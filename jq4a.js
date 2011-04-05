@@ -82,6 +82,15 @@
 		}
 	};
 	
+	$.reflectObject = function(obj) {
+		var retStr = "";
+		retStr += "prototype: " + Object.prototype.toString.call(obj) + "\r\n";
+		for(var x in obj) {
+			retStr += x + ": " + obj[x] + "\r\n";
+		}
+		return retStr;
+	}
+	
 	context.$ = $;
  })(this);
  function StringWriter(){};
