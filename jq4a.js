@@ -10,6 +10,10 @@
  * This code is pre-alpha.
  */
 
+ 
+ //Msxml2.XMLHTTP
+ //http://msdn.microsoft.com/en-us/library/ms535874(v=vs.85).aspx
+ 
  (function(context) {
 	var $ = $ || {};
 	$.tee = function(cmdStr, itFunc, echoIt) {
