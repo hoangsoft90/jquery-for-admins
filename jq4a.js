@@ -91,6 +91,20 @@
 		return retStr;
 	}
 	
+	$.ajax = function(aOpts) {
+		try {
+		var aXML = new ActiveXObject("Msxml2.XMLHTTP");
+		var aType = aOpts.type ? aOpts.type : "GET";
+		aXML.Open(aType, aOpts.url, aOpts.async === true);
+		aXML.Send();
+		if(aOpts.success) { aXML.success(aXML.responeText); }
+		else { return aXML.responseText; }
+		} catch(e) {
+			WScript.Echo($.reflectObject(e));
+			if(aOpts.error) { aOpts.error(e); }
+		}
+	}
+	
 	context.$ = $;
  })(this);
  function StringWriter(){};
