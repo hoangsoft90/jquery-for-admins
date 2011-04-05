@@ -35,6 +35,7 @@ jsshell.cls.execute = function() {
 
 var reflectObject = function(obj) {
 	var retStr = "";
+	retStr += "prototype: " + Object.prototype.toString.call(obj) + "\r\n";
 	for(var x in obj) {
 		retStr += x + ": " + obj[x] + "\r\n";
 	}
