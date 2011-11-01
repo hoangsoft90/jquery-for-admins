@@ -5,7 +5,7 @@
  * Copyright 2011, Michael Snead
  * Dual licensed under the MIT or GPL Version 2 licenses (just like jQuery).
  *
- * 4/3/2011
+ * 11/1/2011
  *
  * This code is pre-alpha.
  */
@@ -99,9 +99,13 @@
 		try {
 		var aXML = new ActiveXObject("Msxml2.XMLHTTP");
 		var aType = aOpts.type ? aOpts.type : "GET";
-		aXML.Open(aType, aOpts.url, aOpts.async === true);
+		if(aOpts.username) {
+			aXML.Open(aType, aOpts.url, aOpts.async === true, aOpts.username + '', aOpts.password + '');
+		} else {
+			aXML.Open(aType, aOpts.url, aOpts.async === true);
+		}
 		aXML.Send();
-		if(aOpts.success) { aXML.success(aXML.responseText); }
+		if(aOpts.success) { aOpts.success(aXML.responseText); }
 		else { return aXML.responseText; }
 		} catch(e) {
 			WScript.Echo($.reflectObject(e));
@@ -123,28 +127,28 @@
 			enumItems.item().Shutdown();
 		}
 	}
-  $.base64Encode = function(input) {
-   var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-   var output = "";
-   var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-   var i = 0;
-   while(i < input.length) {
-      chr1 = input.charCodeAt(i++);
-      chr2 = input.charCodeAt(i++);
-      chr3 = input.charCodeAt(i++);
-      enc1 = chr1 >> 2;
-      enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-      enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-      enc4 = chr3 & 63;
-      if(isNaN(chr2)) {
-         enc3 = enc4 = 64;
-      } else if(isNaN(chr3)) {
-         enc4 = 64;
-      }
-      output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
-   }
-   return output;
-  };
+	$.base64Encode = function(input) {
+		var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+		while(i < input.length) {
+		  chr1 = input.charCodeAt(i++);
+		  chr2 = input.charCodeAt(i++);
+		  chr3 = input.charCodeAt(i++);
+		  enc1 = chr1 >> 2;
+		  enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+		  enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+		  enc4 = chr3 & 63;
+		  if(isNaN(chr2)) {
+			 enc3 = enc4 = 64;
+		  } else if(isNaN(chr3)) {
+			 enc4 = 64;
+		  }
+		  output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+		}
+		return output;
+	};
 
 	
 	context.$ = $;
