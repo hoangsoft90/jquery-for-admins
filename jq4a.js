@@ -5,7 +5,7 @@
  * Copyright 2011, Michael Snead
  * Dual licensed under the MIT or GPL Version 2 licenses (just like jQuery).
  *
- * 11/1/2011
+ * 11/3/2011
  *
  * This code is pre-alpha.
  */
@@ -15,7 +15,11 @@
  //http://msdn.microsoft.com/en-us/library/ms535874(v=vs.85).aspx
  
  (function(context) {
-	var $ = $ || {};
+	var $ = function(selector, context) {
+	};
+	var trimLeft = /^\s+/;
+	var trimRight = /\s+$/;
+	
 	$.tee = function(cmdStr, itFunc, echoIt) {
 		var shell = new ActiveXObject("WScript.Shell");
 		var exec = shell.Exec(cmdStr);
@@ -150,6 +154,17 @@
 		return output;
 	};
 
+	$.trim = String.prototype.trim ?
+		function(text) {
+			return text == null ?
+				"" :
+				text.trim();
+		} :
+		function(text) {
+			return text == null ?
+				"" :
+				text.toString().replace(trimLeft,"").replace(trimRight,"");
+		};
 	
 	context.$ = $;
  })(this);
@@ -168,3 +183,28 @@ StringWriter.prototype.ToString = function(wargs) {
 }
 //System.Collections.ArrayList <-- use $.each to enumerate
 // Add,Sort,Reverse,Remove
+
+Array.prototype.contains = Array.prototype.contains || function(it) {
+	for(var i = 0; i < this.length; i++) {
+		if($.contains(this[i],it) === true) {
+			return true;
+		}
+	}
+	return false;
+}
+
+$.contains = function(x, it) {
+	if(Object.prototype.toString.call(it)==='[object Array]'){
+		for(var i=0;i<it.length;i++){ //It's an array, loop through it
+				if(x.indexOf(it[i]) != -1) 
+				{ return true; }
+		}
+	} else {
+		return x.indexOf(it) !== -1;
+	}	
+	return false;
+}
+
+String.prototype.contains = String.prototype.contains || function(it) {
+	return $.contains(this, it);
+};
